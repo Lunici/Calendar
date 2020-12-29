@@ -1,0 +1,122 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+const string months_of_year[12] = { "January","February","March","April","May","June","July","August","September","October","November","December" };
+const string days_of_week[7] = { "Mon","Tue","Wed","Thu","Fri", "Sat","Sun" };
+const int days_number_of_months[12] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
+
+class Date
+{
+	private:
+		int year;
+		int month;
+		//判断输入是否有效
+		bool isValidInput()
+		{
+			if (year > 0 && month >= 1 && month <= 12)
+				return true;
+			else
+				return false;
+		}
+		//判断是否是闰年
+		bool isLeapYear(int year)
+		{
+			if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+				return true;
+			else
+				return false;
+		}
+		//得到这个月的天数
+		int GetDaysOfMonth(int year, int month)
+		{
+			if (month != 2)
+				return days_number_of_months[month - 1];
+			if (month == 2 && isLeapYear(year) == true)
+				return 29;
+			else
+				return 28;
+		}
+		//得到从公元0年到本月的天数
+		int days_total_from_0(int year, int month)
+		{
+			int total_days = 0;
+			for (int i = 0; i < year; i++)
+			{
+				if (isLeapYear(i) == true)
+					total_days += 366;
+				else
+					total_days += 365;
+			}
+			for (int i = 1; i < month; i++)
+				total_days += GetDaysOfMonth(year, i);
+			return total_days;
+		}
+		//得到对应月份的英文单词
+		string GetMonthWord(int month)
+		{
+			return months_of_year[month - 1];
+		}
+	public:
+		void GetInput()
+		{
+			while (true)
+			{
+				cout << "Please enter the year and the month (ex:2020 12): ";
+				cin >> year >> month;
+				// Check the valid
+				if (isValidInput() == true)
+					break;
+				else
+				{
+					cout << "Invalid Input!" << endl;
+					system("pause");
+					system("cls");
+				}
+			}
+		}
+		// output the calendar
+		void ShowCalendar()
+		{
+			//输出年和月
+			cout << endl;
+			cout << GetMonthWord(month) << " of " << year << endl;
+			//输出星期一到星期日
+			for (int i = 0; i <= 6; i++)
+				cout << setw(4) << days_of_week[i];
+			cout << endl;
+			//计算1号位置
+			int first_day_space = ((days_total_from_0(year, month) + 5) % 7);
+			int cnt_in_line = 0;
+			//输出开同空格
+			for (int i = 0; i < first_day_space; i++)
+			{
+				cout << setw(4) << " ";
+				cnt_in_line++;
+			}
+			//输出每日号
+			for (int i = 1; i <= GetDaysOfMonth(year, month); i++)
+			{
+				if (cnt_in_line % 7 == 0 && cnt_in_line != 0)
+					cout << endl;
+				cout << setw(4) << i;
+				cnt_in_line++;
+			}
+			cout << endl <<endl;
+			return;
+		}
+};
+
+int main()
+{
+	Date date;
+	while (true)
+	{
+		date.GetInput();
+		date.ShowCalendar();
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}
